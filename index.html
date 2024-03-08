@@ -1,26 +1,63 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
+<html>
   <body>
-    <h1>Hello</h1>
-    <script src="/js/loader.js"></script>
+    <input id="primeIn" />
     <script src="https://cdn.jsdelivr.net/npm/@assemblyscript/loader/umd/index.js"></script>
+
+    <script src="/js/loader.js"></script>
     <script>
+      const el = document.getElementById("primeIn");
+
+      function isPrimeJS(x) {
+        if (x < 2) {
+          return false;
+        }
+
+        for (let i = 2; i < x; i++) {
+          if (x % i === 0) {
+            return false;
+          }
+        }
+        return true;
+      }
+
       const WL = new WasmLoader();
       WL.wasm("/build/release.wasm").then((instance) => {
-        const { readMemory, memory } = instance;
+        const { isPrimeWasm } = instance;
+        el.addEventListener("keyup", () => {
+          console.table(run(el.value));
+        });
+        function run(n) {
+          const results = [];
+          for (let i = 0; i < 1000; i++) {
+            const timeStartWasm = performance.now();
+            isPrimeWasm(n);
+            const wasmTime = performance.now() - timeStartWasm;
 
-        const memoryArray = new Uint8Array(memory.buffer);
+            const timeStartJS = performance.now();
+            isPrimeJS(n);
+            const jsTime = performance.now() - timeStartJS;
 
-        document.write(memoryArray[1]);
-        document.write(`<br/>`);
-        memoryArray[2] = 42;
+            if (jsTime < wasmTime) {
+              results.push("JavaScript");
+            } else {
+              results.push("WASM");
+            }
+          }
 
-        document.write(readMemory(2));
+          return results.reduce(
+            (acc, item) => {
+              if (item === "JavaScript") {
+                acc["JavaScript"]++;
+              }
+              if (item === "WASM") {
+                acc["WASM"]++;
+              }
+              return acc;
+            },
+            { JavaScript: 0, WASM: 0 }
+          );
+        }
       });
     </script>
   </body>
