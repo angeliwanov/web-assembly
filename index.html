@@ -8,11 +8,13 @@
   <body>
     <h1>Hello</h1>
     <script src="/js/loader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@assemblyscript/loader/umd/index.js"></script>
     <script>
       const WL = new WasmLoader();
       WL.wasm("/build/release.wasm").then((instance) => {
-        const { minusOne } = instance;
-        document.write(minusOne(44));
+        const { fizzbuzz, __getString } = instance;
+        const str = __getString(fizzbuzz(15));
+        document.write(str);
       });
     </script>
   </body>

@@ -3,17 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Loader</title>
   </head>
   <body>
-    <h1>Hello</h1>
-    <script src="/js/loader.js"></script>
-    <script>
-      const WL = new WasmLoader();
-      WL.wasm("/build/release.wasm").then((instance) => {
-        const { minusOne } = instance;
-        document.write(minusOne(44));
-      });
-    </script>
+    <h1>Loader</h1>
   </body>
 </html>
